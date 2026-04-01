@@ -44,7 +44,11 @@ final readonly class ContentElementWrapperService
             $canModifyRecord = false; // no edit rights
         }
 
-        if ($table === 'tt_content' && !$beUser->check('explicit_allowdeny', 'tt_content:CType:' . $data['CType'])) {
+        if (0 === ($data['uid'] ?? 0)) {
+            $canModifyRecord = false;
+        }
+
+        if ($table === 'tt_content' && !$beUser->check('explicit_allowdeny', 'tt_content:CType:' . $data['CType'] ?? null )) {
             $canModifyRecord = false;
             // no access to this content element type
         }
@@ -54,16 +58,21 @@ final readonly class ContentElementWrapperService
             throw new UnexpectedValueException('Record array must be a ' . Record::class, 1772465047);
         }
 
-        $schema = $this->tcaSchema->get($record->getFullType());
+        try {
+            $schema = $this->tcaSchema->get($record->getFullType());
 
-        $hiddenFieldType = $schema->getCapability(TcaSchemaCapability::RestrictionDisabledField);
-        $hiddenFieldName = $hiddenFieldType->getFieldName();
-        if (
-            $schema->getField($hiddenFieldName)->supportsAccessControl() && !$beUser->check(
-                'non_exclude_fields',
-                $record->getMainType() . ':' . $hiddenFieldName,
-            )
-        ) {
+            $hiddenFieldType = $schema->getCapability(TcaSchemaCapability::RestrictionDisabledField);
+            $hiddenFieldName = $hiddenFieldType->getFieldName();
+            if (
+                $schema->getField($hiddenFieldName)->supportsAccessControl() && !$beUser->check(
+                    'non_exclude_fields',
+                    $record->getMainType() . ':' . $hiddenFieldName,
+                )
+            ) {
+                $hiddenFieldName = ''; // user has no access to hidden field
+            }
+        } catch (\Exception) {
+            $canModifyRecord = false;
             $hiddenFieldName = ''; // user has no access to hidden field
         }
 
