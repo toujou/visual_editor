@@ -113,3 +113,9 @@ img[data-veedit] {
 *:has(> img[data-veedit]:focus)::after {
   opacity: 1;
 }
+/** Ensure the action bar appears above the top bar by using a higher z-index */
+ve-content-element[ctype*="header"]:hover,
+ve-content-element[ctype*="hero"]:hover,
+ve-content-element.header:hover {
+  z-index: calc(var(--z-index-topbar, 100) + 1);
+}
