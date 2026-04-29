@@ -37,6 +37,18 @@ export class VeDragHandle extends LitElement {
   firstUpdated(changedProperties) {
     autoNoOverlap(this, 've-drag-handle');
     this.style.paddingBottom = 'calc(var(--auto-no-overlap-padding, 0px) + 4px)';
+
+    // If there’s not enough space above (near top of viewport)
+    // place action-bar inside of element
+    const host = this.getRootNode().host;
+
+    if (host) {
+      const rect = host.getBoundingClientRect();
+      if (rect.top <= this.getHiddenHeight()) {
+        this.style.bottom = 'auto';
+        this.style.top = '0';
+      }
+    }
   }
 
   /**
@@ -74,6 +86,22 @@ export class VeDragHandle extends LitElement {
       cursor: grab;
     }
   `;
+
+
+  /**
+   * @return {Number}
+   */
+  getHiddenHeight() {
+    const clone = Object.assign(this.cloneNode(true), {
+      style: 'position:absolute;visibility:hidden;display:block'
+    });
+
+    document.body.append(clone);
+    const height = clone.getBoundingClientRect().height;
+    clone.remove();
+
+    return height;
+  }
 }
 
 customElements.define('ve-drag-handle', VeDragHandle);
