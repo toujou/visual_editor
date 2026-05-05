@@ -119,3 +119,7 @@ ve-content-element[ctype*="hero"]:hover,
 ve-content-element.header:hover {
   z-index: calc(var(--z-index-topbar, 100) + 1);
 }
+
+html {
+  font-family: var(--font-family-text);
+}
