@@ -7,7 +7,7 @@ use TYPO3\CMS\VisualEditor\Backend\Controller\PageEditController;
 return [
     'web_edit' => [
         'parent' => 'web',
-        'position' => ['before' => 'web_layout'],
+        'position' => ['after' => 'web_layout'],
         'access' => 'user',
         'path' => '/module/web/edit',
         'iconIdentifier' => 'module-page-edit',
